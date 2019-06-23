@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JS Drum Kit</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 
   <div class="keys">
     <div data-key="65" class="key">
-      <kbd>A</kbd>
+      <kbd>A</kbd> <!-- the kbd element identifies text that represents user keyboard input -->
       <span class="sound">clap</span>
     </div>
     <div data-key="83" class="key">
@@ -47,7 +49,8 @@
     </div>
   </div>
 
-  <audio data-key="65" src="sounds/clap.wav"></audio>
+  <audio data-key="65" src="sounds/clap.wav"></audio> <!-- audio element is used to embed sound content in documents -->
+  <!-- any attribute on any element whose attribute name starts with data- is a data attribute -->
   <audio data-key="83" src="sounds/hihat.wav"></audio>
   <audio data-key="68" src="sounds/kick.wav"></audio>
   <audio data-key="70" src="sounds/openhat.wav"></audio>
@@ -57,10 +60,49 @@
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
-<script>
+  <script>
 
-</script>
+    // data-* attributes allow us to store extra information on standard, semantic HTML elements without other hacks such as non-standard attributes, extra properties on DOM
+
+    // Add event listener for a keydown event on the window object
+    window.addEventListener('keydown', function (e) {
+      // is there an audio element on the page that has a data-key associated with it | if so, return the html element
+      const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`)
+      // .querySelector because we are only looking for one instance
+      // [] attribute selector
+      // when we console log the event the key "keyCode" is assigned the value of the key that was pressed
+      // now when we hit the key we get the corresponding audio element
+      // console.log(audio)
+      if (!audio) return // stops the function from running all together
+
+      audio.currentTime = 0 // rewinds to the start
+      audio.play()
+      // if you call .play() on an audio element that is playing it won't play again
+
+      const key = document.querySelector(`.key[data-key="${e.keyCode}"]`)
+      // selects a key element | used for conditional rendering the style
+      // console.log(key)
+      key.classList.add("playing") // adds class playing to the element
+    })
+
+    function removeTransition(e) {
+      if (e.propertyName !== "transform") return // skip it if it is not a transform
+      this.classList.remove("playing")
+      // the keyword this is equal to the key in row 96 | removeTransition was called against the key
+    }
+
+    // listen on each key for when the transition end event happens
+    const keys = Array.from(document.querySelectorAll(".key")) // listens for every single key on the page with class equal to key
+    keys.forEach(key => key.addEventListener("transitionend", removeTransition))
+
+    // keys returns an array
+    // forEach() executes a provide function once for each array element
+
+    // finished product separated out the callback function in window.addEventListener() into a function called playSound
+
+  </script>
 
 
 </body>
+
 </html>
